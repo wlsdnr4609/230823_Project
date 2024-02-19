@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.zeronelab.mybatis.mapper.MemberMapper">
+
+	<!-- 회원 리스트 -->
+	<select id="selectMemberList"
+		resultType="dev.zeronelab.mybatis.vo.Member">
+		select *
+		from MEMBER
+		ORDER BY memNo DESC
+	</select>
+
+
+	<!-- memNo로 회원정보 조회 -->
+	<select id="selectMNo" resultType="dev.zeronelab.mybatis.vo.Member">
+
+		select *
+		from member
+		where memNo =
+		#{memNo}
+
+	</select>
+	
+	
+	<!-- 회원가입 -->
+	<insert id="insertMem">
+
+		insert into member (memName, memNickName, memId, memPw)
+		values(#{memName},#{memNickName},#{memId},#{memPw} )
+
+	</insert>
+
+
+
+	<!-- pw 일치여부 체크 -->
+	<select id="getHashedPasswordByEmail"
+		resultType="java.lang.String">
+
+		select memPw
+		from member
+		where memId = #{memId}
+
+	</select>
+
+
+	<!-- 로그인 -->
+	<select id="login" resultType="dev.zeronelab.mybatis.vo.Member"
+		parameterType="map">
+
+		select *
+		from member
+		where
+		memId = #{memId}
+		and memPw = #{memPw}
+
+	</select>
+
+
+	<!-- 쿠키가 있다면 로그인 유지 -->
+	<update id="keepLogin">
+
+		update member
+		set sessionKey = #{sessionId},
+		sessionLimit = #{next}
+		where memId = #{memId}
+
+	</update>
+
+
+	<!-- 이메일로 mid 체크 -->
+	<select id="emailCk" resultType="dev.zeronelab.mybatis.vo.Member">
+
+		select memNo, memId
+		from member
+		where memId = #{memId}
+
+	</select>
+
+
+	<!-- 닉네임 중복체크 -->
+	<select id="ninameCk" resultType="dev.zeronelab.mybatis.vo.Member">
+
+		select memNo, memId
+		from member
+		where memNickName = #{memNickName}
+
+	</select>
+
+
+	<!-- 마이페이지 회원정보 조회 -->
+	<select id="selectMemId" resultType="dev.zeronelab.mybatis.vo.Member">
+
+		select memId, memNickName, memName,
+		memPw, regdate
+		from member
+		where memId = #{memId}
+
+	</select>
+
+
+	<!-- 마이페이지 회원정보 수정 -->
+	<update id="update">
+
+		update member set memName = #{memName}, memNickName = #{memNickName}, memPw = #{memPw}
+		where memId = #{memId}
+
+	</update>
+
+
+	<!-- 회원탈퇴 -->
+	<delete id="delete">
+
+		delete from member
+		where memId = #{memId}
+	</delete>
+
+
+</mapper>

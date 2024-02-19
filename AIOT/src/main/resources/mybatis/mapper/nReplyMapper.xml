@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dev.zeronelab.mybatis.mapper.nReplyMapper">
+
+	<!-- 댓글 등록 -->
+	<insert id="insertReply">
+		INSERT INTO nReply (bNo, replyText, replyer)
+		VALUES ( #{bNo}, #{replyText}, #{replyer})
+	</insert>
+
+
+	<!-- 댓글 리스트 -->
+	<select id="selectList" resultType="dev.zeronelab.mybatis.vo.nReplyVO">
+		SELECT *
+		FROM nReply
+		WHERE bNo =
+		#{bNo}
+		ORDER BY regdate ASC
+	</select>
+
+
+	<!-- 댓글 수정 -->
+	<update id="update">
+	<![CDATA[
+		UPDATE nReply
+	SET replyText = #{replyText},
+	modidate = CURRENT_TIMESTAMP
+	WHERE rNo = #{rNo}
+	 ]]>
+	</update>
+
+
+	<!-- 댓글 삭제 -->
+	<delete id="delete">
+		<![CDATA[
+		DELETE FROM nReply
+		WHERE rNo = #{rNo}
+		 ]]>
+	</delete>
+
+
+	<!-- 댓글 페이징 -->
+	<select id="listPage"
+		resultType="dev.zeronelab.mybatis.vo.nReplyVO">
+	<![CDATA[
+		SELECT *
+	FROM (
+ 	   SELECT rNo, bNo, replyText, replyer, regdate, ROWNUM AS rnum
+    FROM (
+        SELECT rNo, bNo, replyText, replyer, regdate
+        FROM nReply
+       	 	WHERE bNo = #{bNo}
+       		ORDER BY rNo DESC
+    ) WHERE ROWNUM <= #{cri.pageStart} + #{cri.perPageNum}
+	) WHERE rnum > #{cri.pageStart}
+	 ]]>
+	</select>
+
+
+	<!-- 댓글 개수 -->
+	<select id="count" resultType="int">
+		<![CDATA[
+		SELECT COUNT(bNo) AS reply_count
+		FROM nReply
+		WHERE bNo = #{bNo}
+		]]>
+	</select>
+
+</mapper>
+
